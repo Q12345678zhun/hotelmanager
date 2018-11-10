@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+ <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	       <property name="dataSource">
+	           <ref local="dataSource"></ref>
+	       </property>
+	       <property name="hibernateProperties">
+	           <props>
+	              <!-- 配置数据库方言-->
+	              <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+	             
+	             <!-- 输出运行时生成的sql语句 -->
+	             <prop key="hibernate.show_sql"></prop>
+	           </props>
+	       
+	       </property>
+	       <property name="mappingResources">
+	           <list>
+	           <value>com/bean/Admin.hbm.xml</value>
+	           <value>com/bean/Order.hbm.xml</value>
+	           <value>com/bean/Room.hbm.xml</value>
+	           <value>com/bean/User.hbm.xml</value>
+	           </list>
+	       </property>
+	</bean>
+
+	
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	     <property name="driverClassName">
+	       <value>com.mysql.jdbc.Driver</value>
+	     </property>
+	     <property name="url">
+	        <value>jdbc:mysql://localhost:3306/hotel</value>
+	     </property>
+	     <property name="username">
+	        <value>root</value>
+	      </property>
+	      <property name="password">
+	         <value>123456qw</value>
+	      </property>
+	</bean>
+	<!-- <bean id="adminDao"
+	 	class="com.daoImpl.AdminDaoImpl"
+	 	abstract="false" lazy-init="default" autowire="default">
+	 	<property name="sessionFactory">
+	 		<ref bean="sessionFactory" />
+	 	</property>
+	 </bean>
+	 <bean id="orderDao"
+	 	class="com.daoImpl.OrderDaoImpl"
+	 	abstract="false" lazy-init="default" autowire="default">
+	 	<property name="sessionFactory">
+	 		<ref bean="sessionFactory" />
+	 	</property>
+	 </bean>
+	 
+	  <bean id="roomDao"
+	 	class="com.daoImpl.RoomDaoImpl"
+	 	abstract="false" lazy-init="default" autowire="default">
+	 	<property name="sessionFactory">
+	 		<ref bean="sessionFactory" />
+	 	</property>
+	 </bean>
+	  <bean id="userDao"
+	 	class="com.daoImpl.UserDaoImpl"
+	 	abstract="false" lazy-init="default" autowire="default">
+	 	<property name="sessionFactory">
+	 		<ref bean="sessionFactory" />
+	 	</property>
+	 </bean>-->
+	 
+	<!--  <bean id="adminService" class="com.seviceImpl.AdminServiceImpl">
+	   <property name="adminDao" ref="adminDao"></property>
+	</bean>
+	
+	<bean id="orderService" class="com.seviceImpl.OrderServiceImpl">
+	   <property name="orderDao" ref="orderDao"></property>
+	</bean>
+	<bean id="roomService" class="com.seviceImpl.RoomServiceImpl">
+	   <property name="roomDao" ref="roomDao"></property>
+	</bean>
+	<bean id="userService" class="com.seviceImpl.UserServiceImpl">
+	   <property name="userDao" ref="userDao"></property>
+	</bean>
+	
+	<bean id="adminServiceAction" class="com.action.admin.AdminServiceAction">
+	       <property name="adminService" ref="adminService"></property>
+	</bean>-->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="adminDao" class="com.daoImpl.AdminDaoImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="adminServiceTarget" class="com.seviceImpl.AdminServiceImpl">
+		<property name="adminDao" ref="adminDao"></property>
+	</bean>
+
+	<bean id="adminService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="adminServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+
+	</bean>
+
+	<bean id="saveAdminAction" class="com.action.admin.SaveAdminAction"
+		scope="prototype">
+		<property name="adminService" ref="adminService"></property>
+	</bean>
+
+	<bean id="adminServiceAction" class="com.action.admin.AdminServiceAction"
+		scope="prototype">
+		<property name="adminService" ref="adminSer"></property>
+	</bean>
+	 
+	 
+	 <!-- user -->
+	 <bean id="userDao" class="com.daoImpl.UserDaoImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="userServiceTarget" class="com.seviceImpl.UserServiceImpl">
+		<property name="userDao" ref="userDao"></property>
+	</bean>
+
+	<bean id="userService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="userServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+
+	</bean>
+
+	
+	<bean id="userAction" class="com.action.user.UserAction"
+		scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="saveUser" class="com.action.user.SaveUserAction"
+		scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="listUserAction" class="com.action.user.ListUserAction"
+		scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	
+	<!-- room -->
+	
+	<bean id="roomDao" class="com.daoImpl.RoomDaoImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="roomServiceTarget" class="com.seviceImpl.RoomServiceImpl">
+		<property name="roomDao" ref="roomDao"></property>
+	</bean>
+
+	<bean id="roomService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="roomServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+
+	</bean>
+	
+	<bean id="listRoomAction" class="com.action.room.ListRoomAction"
+		scope="prototype">
+		<property name="roomService" ref="roomService"></property>
+	</bean>
+	<bean id="saveRoomAction" class="com.action.room.SaveRoomAction"
+		scope="prototype">
+		<property name="roomService" ref="roomService"></property>
+	</bean>
+	
+	<!-- order -->
+	
+	<bean id="orderDao" class="com.daoImpl.OrderDaoImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="orderServiceTarget" class="com.seviceImpl.OrderServiceImpl">
+		<property name="orderDao" ref="orderDao"></property>
+	</bean>
+
+	<bean id="orderService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="orderServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+
+	</bean>
+
+	<bean id="listOrder" class="com.action.order.ListOrderAction"
+		scope="prototype">
+		<property name="roomService" ref="roomService"></property>
+		<property name="orderService" ref="orderService"></property>
+	</bean>
+	<bean id="saveOrder" class="com.action.order.SaveOrderAction"
+		scope="prototype">
+		<property name="orderService" ref="orderService"></property>
+		<property name="roomService" ref="roomService"></property>
+	</bean>
+	<bean id="orderServiceAction" class="com.action.order.OrderServiceAction"
+		scope="prototype">
+		<property name="orderService" ref="orderService"></property>
+		<property name="roomService" ref="roomService"></property>
+	</bean>
+	<bean id="userAndRoom" class="com.action.order.UserAndRoomAction"
+		scope="prototype">
+		<property name="orderService" ref="orderService"></property>
+		<property name="roomService" ref="roomService"></property>
+	</bean>
+</beans>
+

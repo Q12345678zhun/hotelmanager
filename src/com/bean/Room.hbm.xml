@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.bean.Room" table="room">
+        <id name="roomid" column="roomid" type="int">
+             <generator class="identity"></generator>
+        </id>
+        <property name="name" column="name" type="string"></property>
+        <property name="price" column="price" type="double"></property>
+        <property name="category" column="category" type="string"></property>
+        <property name="status" column="status" type="int"></property>
+        
+    </class>
+
+</hibernate-mapping>

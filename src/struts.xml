@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<package name="hotelManager" extends="struts-default">
+	     <action name="adminService" class="com.action.admin.AdminServiceAction">
+	          <result name="loginSuc" type="redirect">/info/adminInfo.jsp</result>
+	          <result name="input" type="redirect">/adminLogin.jsp</result>
+	     </action>
+	     <action name="userService" class="com.action.user.UserAction">
+	          <result name="success" type="redirect">/info/userInfo.jsp</result>
+	          <result name="input" type="redirect">/login.jsp</result>
+	     </action>
+	     <action name="saveUser" class="com.action.user.SaveUserAction">
+	          <result name="success" type="redirect">/login.jsp</result>
+	     </action>
+	    
+	      
+	</package>
+	<!-- 用户登录后才能访问的action -->
+	<package name="authority" extends="struts-default">
+	    <interceptors>
+	        <interceptor name="authority" class="com.integration.interceptor.AuthorityInterceptor"/>
+	        <interceptor-stack name="mydefault">
+	                  <interceptor-ref name="defaultStack"></interceptor-ref>
+	                  <interceptor-ref name="authority"></interceptor-ref>
+	        </interceptor-stack>
+	    </interceptors>
+	    <default-interceptor-ref name="mydefault"></default-interceptor-ref>
+	    <global-results>
+	            <result name="login">/login.jsp</result>
+	    </global-results>
+	    
+	    <action name="saveOrder" class="com.action.order.SaveOrderAction">
+			<result name="success" type="dispatcher">/order/add.jsp</result>
+			<result name="addSuc" type="redirect">serviceAction</result>
+			<result name="addFail" type="dispatcher">/info/result.jsp</result>
+		</action>
+		<action name="serviceAction" class="orderServiceAction">
+			<result name="success" type="dispatcher">/info/orderInfo.jsp</result>
+			<result name="delSuc" type="dispatcher">/info/result.jsp</result>
+		</action>
+		
+	    
+	    
+	</package>
+	<!-- 管理员后才能访问的action  -->
+	<package name="authorityAdmin" extends="struts-default">
+	    <interceptors>
+	        <interceptor name="authorityAdmin" class="com.integration.interceptor.AdminInterceptor"/>
+	        <interceptor-stack name="mydefaultAdmin">
+	                  <interceptor-ref name="defaultStack"></interceptor-ref>
+	                  <interceptor-ref name="authorityAdmin"></interceptor-ref>
+	        </interceptor-stack>
+	    </interceptors>
+	    <default-interceptor-ref name="mydefaultAdmin"></default-interceptor-ref>
+	    <global-results>
+	            <result name="login">/adminlogin.jsp</result>
+	    </global-results>
+	    <action name="listUser" class="com.action.user.ListUserAction">
+	             <result name="success">/user/list.jsp</result>
+	    </action>
+	    <action name="listRoom" class="com.action.room.ListRoomAction">
+	             <result name="success">/room/list.jsp</result>
+	    </action>
+	     <action name="listOrder" class="com.action.order.ListOrderAction">
+	             <result name="success">/order/list.jsp</result>
+	    </action>
+	    <action name="saveRoom" class="com.action.room.SaveRoomAction">
+			<result name="success" type="redirect">listRoom.action</result>
+			
+		</action>
+		<action name="orderService" class="orderServiceAction">
+			<result name="success" type="dispatcher">/info/orderInfo.jsp</result>
+			<result name="delSuc" type="dispatcher">/info/result.jsp</result>
+		</action>  
+		
+		<action name="userAndRoom" class="com.action.order.UserAndRoomAction">
+			<result name="success" type="dispatcher">/order/orderList.jsp</result>
+			<result name="delSuc" type="dispatcher">/info/result.jsp</result>
+		</action>    
+	     
+	</package>
+</struts>
